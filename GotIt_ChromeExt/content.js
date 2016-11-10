@@ -11,8 +11,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         			tmp = myBodyElements[i].textContent;
         			tmp_ar = tmp.split(".")
         			if(tmp_ar.length>1){
+                        negated_tmp = nlp_compromise.text(tmp_ar[0]).negate().text()
     					myBodyElements[i].style.backgroundColor = "yellow";
-    					arr.push(tmp)
+    					arr.push(negated_tmp)
     				}
 				}
 			}
