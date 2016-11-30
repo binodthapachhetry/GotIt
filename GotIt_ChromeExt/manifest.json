@@ -10,8 +10,8 @@
   },
   "default_locale": "en",
   "background": {
-    "scripts":["background.js"],
-    "persistent": false
+    "scripts":["background.js","jquery-3.1.1.js"],
+    "persistent": true
   },
   "browser_action": {
     "default_icon": "icons/icon19.png"
@@ -20,7 +20,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*"],
-      "js": ["content.js"],
+      "js": ["nlp_compromise.js","jquery-3.1.1.js","myscript.js"],
       "run_at":"document_end"
     }
   ],
