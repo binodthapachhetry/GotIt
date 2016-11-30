@@ -3,7 +3,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg.text && (msg.text == "report_back")) {
         /* Call the specified callback, passing
            the web-pages DOM content as argument */
-          	var docBody = document.getElementsByTagName("body")[0];  
+           // $('html,body').css('cursor','crosshair');
+          	// var docBody = document.getElementsByTagName("body")[0];  
   			var myBodyElements = docBody.getElementsByTagName("p");
         	var arr=[]
         	for (i = 0; i < myBodyElements.length; i++) {

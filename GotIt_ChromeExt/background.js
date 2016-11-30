@@ -1,6 +1,7 @@
 
 // A function to use as callback
 function doStuffWithDom(domContent) {
+	
 	arrayLength = domContent.length;
 	for (var i = 0; i < arrayLength; i++) {
 		tmp = domContent[i];
