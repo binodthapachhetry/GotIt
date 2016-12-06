@@ -4,9 +4,9 @@
   "manifest_version": 2,
   "description": "Test app for Got it!",
   "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
+    "16": "icons/studying16.png",
+    "48": "icons/studying.png",
+    "128": "icons/studying.png"
   },
   "default_locale": "en",
   "background": {
@@ -14,13 +14,14 @@
     "persistent": true
   },
   "browser_action": {
-    "default_icon": "icons/icon19.png"
+    "default_icon": "icons/studying.png"
   },
 
   "content_scripts": [
     {
       "matches": ["https://*/*"],
-      "js": ["nlp_compromise.js","jquery-3.1.1.js","myscript.js"],
+      "css":["bootstrap.min.css","inject.css","introjs.css"],
+      "js": ["nlp_compromise.js","jquery-3.1.1.js","bootstrap.min.js","intro.js","jquery.confirm.js","jquery.confirm.min.js","myscript.js"],
       "run_at":"document_end"
     }
   ],
