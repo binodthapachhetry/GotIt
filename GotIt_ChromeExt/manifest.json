@@ -1,8 +1,8 @@
 {
   "name": "Got it!",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "manifest_version": 2,
-  "description": "Test app for Got it!",
+  "description": "A context-sensitive personalized learning tool that helps users with their reading comprehension of complex material.",
   "icons": {
     "16": "icons/studying16.png",
     "48": "icons/studying.png",
@@ -25,5 +25,9 @@
       "run_at":"document_end"
     }
   ],
-  "permissions": ["activeTab"]
+  "permissions": [
+                "notifications",
+                "activeTab",
+                "tabs"
+                ]
 }

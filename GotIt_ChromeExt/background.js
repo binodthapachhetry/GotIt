@@ -10,70 +10,77 @@ function doStuffWithDom(domContent) {
 	}
 }
 
-// // When the browser-action button is clicked...
-// chrome.browserAction.onClicked.addListener(function (tab) {
-//     // ...if it matches, send a message specifying a callback too
-//     chrome.tabs.sendMessage(tab.id, {text: 'report_back'}, doStuffWithDom);
-//     // chrome.tabs.sendMessage(tab.id, doStuffWithDom);
-
-// });
-
-
-// chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-//     chrome.tabs.sendMessage(tabs.id, {text: 'report_back'}, doStuffWithDom);  
-// });
-
+var dictionary = {};
 var counter = 0;
 
+
 function handleMessage(request, sender, sendResponse) {
-  	console.log("Message from the content script: " + request.di);
+  	console.log("Message from the content script: " + request.di + " " + sender.tab.id);
 
-  	counter ++;
-  	chrome.browserAction.setBadgeText({text: String(counter)});
+  	// counter ++;
+  	console.log(dictionary);
+  	if (!sender.tab.id in dictionary){
+  		dictionary[sender.tab.id] = 0; 
+  		console.log('replacing 0 to nan');
+  	}
 
+  	dictionary[sender.tab.id] = dictionary[sender.tab.id] + 1;
+  	chrome.browserAction.setBadgeText({text: String(dictionary[sender.tab.id]),tabId:sender.tab.id});
 	chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]}); 
-  // sendResponse({response: "Response from background script"});
+	console.log('sending notification');
+
+	var progressPercent = dictionary[sender.tab.id] *(100/request.di)
+	var progressPercent_round = Math.round(progressPercent);
+	var progressPercent_int = parseInt(progressPercent_round);
+
+	console.log(sender.tab.id);
+	console.log(dictionary[sender.tab.id]);
+	console.log(progressPercent_round);
+	console.log(progressPercent_int);
+	
+	var opt = {
+		  type: "progress",
+		  title: "Good job for the correct answer!",
+		  message: "Your current progress:",
+		  iconUrl: chrome.extension.getURL("studying.png"),
+		  priority:2,
+		  isClickable:false,
+		  progress: progressPercent_int
+		}
+	chrome.notifications.create("notify1",opt,cb);
+	console.log("message sent?");
+
+	function cb(){
+		console.log("pop-up done");
+	}
+	
 }
+
 
 
 
 chrome.runtime.onMessage.addListener(handleMessage);
 
-// chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-//    console.log('tab changed');
-// }); 
 
 
-// chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
-//     function(tabId, changeInfo, tab){
-//         if(!changeInfo.url) return; // URL did not change
-//         // Might be better to analyze the URL to exclude things like anchor changes
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 
-//         /* ... */
-//         chrome.browserAction.setBadgeText({text: String(0), tabId: tab.id});
-//     };
-// });
+		console.log(dictionary);
+		console.log("url:" + changeInfo.url);
+		if(changeInfo.url){dictionary[tabId] = 0;}
 
-// chrome.browserAction.setBadgeText({text: "1"});
+    	// if (!tabId in dictionary){dictionary[tabId] = 0; }
+        chrome.browserAction.setBadgeText({text: String(dictionary[tabId]), tabId: tabId});
+        chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]}); 
 
-// chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]});
+});
 
 
-// var timer;
-// document.getElementById("myDIV").addEventListener("scroll", myFunction);
+chrome.tabs.onCreated.addListener(function(tab) {  
 
-// function myFunction() {
-// 	if ( timer ) clearTimeout(timer);
-// 	timer = setTimeout(function(){
-//         console.log("Haven't scrolled in 5000 ms!");
-//     }, 5000);
-//     // document.getElementById("demo").innerHTML = "You scrolled in div.";
-// }
-
-// document.scroll(function() {
-//     clearTimeout($.data(this, 'scrollTimer'));
-//     $.data(this, 'scrollTimer', setTimeout(function() {
-//         // do something
-//         console.log("Haven't scrolled in 5000 ms!");
-//     }, 5000));
-// });
+   console.log(dictionary);
+   dictionary[tab.id] = 0;
+   console.log("Created a dictionary element with key " + tab.id + " and value " + dictionary[tab.id] );
+   chrome.browserAction.setBadgeText({text: String(dictionary[tab.id]), tabId: tab.id});
+   chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]});
+});

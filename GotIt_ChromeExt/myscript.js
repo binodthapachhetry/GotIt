@@ -4,13 +4,14 @@ var myBodyElements = docBody.getElementsByTagName("p");
 var arr=[]
 
 var count = 1;
+butNum = 0;
 for (i = 0; i < myBodyElements.length; i++) {
     if(myBodyElements[i].textContent){
         tmp = myBodyElements[i].textContent;
         tmp_ar = tmp.split(".")
         if(tmp_ar.length>1){
 
-
+            butNum++;
 
             var id = "Gotit" + String(i);
             var bid = "GotitButn" + String(i);
@@ -33,6 +34,7 @@ for (i = 0; i < myBodyElements.length; i++) {
 
             btn.onmouseover = (function(q,sen,log,bid,id) { 
               return function() { 
+                console.log('mouseover!!');
                 generate(q,sen,log,bid,id);
             }; 
         }(tmp2,tmp_ar[0],log,bid,id));
@@ -51,56 +53,6 @@ function generate(qu,sen,log,bid,id){
   var j_id = "#"+id+" span"
   $(j_id).css('background-color', 'black');
 
-
-
-
-// $.confirm({
-//     text: "Are you sure you want to delete that comment?",
-//     confirm: function() {
-//         // delete();
-//     },
-//     cancel: function() {
-//         // nothing to do
-//     }
-// });
-  
-
-  // $( "p:contains(sen)" ).mark(sen);
-
-  // var context = document.querySelectorAll("p")[i];
-
-
-  // console.log(context);
-  // var instance = new Mark(context);
-  // instance.mark(sen,{"accuracy":"exactly","debug":true,"diacritics":false});
-
-
-
-  // $('p').html( $('p').html().replace(/Autism/g, '<strong>hello</strong>') )
-
-  // $( "p:contains(sen)" ).css( "text-decoration", "underline" );
-  // $( "p:contains('Autism')" ).css( "text-decoration", "underline" );
-  // console.log(id);
-
-//   bootbox.confirm({
-//     closeButton: false,
-//     size:'small',
-//     message: qu,
-//     buttons: {
-//         confirm: {
-//             label: 'True',
-//             className: 'btn-success'
-//         },
-//         cancel: {
-//             label: 'False',
-//             className: 'btn-danger'
-//         }
-//     },
-//     callback: function (result) {
-//         console.log('This was logged in the callback: ' + result);
-//     }
-// });
-
 var j_bid = "#"+bid
 
 console.log(j_bid)
@@ -112,10 +64,11 @@ $.confirm({
     confirm: function(button) {
         console.log('pressed confirm');
         $(j_id).css('background-color', 'white');
+        $(j_bid).remove();
     },
     cancel: function(button) {
         console.log('pressed cancel');
-        chrome.runtime.sendMessage({di:"1"})
+        chrome.runtime.sendMessage({di:butNum})
         $(j_id).css('background-color', 'white');
         // $(j_bid).prop("disabled",true);
         $(j_bid).remove();
@@ -124,25 +77,9 @@ $.confirm({
     },
     confirmButton: "True",
     cancelButton: "False"
-    // post: true,
-    // confirmButtonClass: "btn-danger",
-    // cancelButtonClass: "btn-default",
-    // dialogClass: "modal-dialog modal-lg" // Bootstrap classes for large modal
 });
 
 }
 
-// function call()
-//         {
-//             popup = alert('Good job!');         
-//             setTimeout(wait, 2000);
-//         }   
-//         function caller()
-//         {
-//             setInterval(call, 4000);
-//         }
-//         function wait()
-//         {
-//             popup.close();
-//         }
+
 
