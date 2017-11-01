@@ -32,9 +32,9 @@ for (i = 0; i < myBodyElements.length; i++) {
             btn.setAttribute('class','confirm')
             btn.appendChild(t);
 
-            btn.onmouseover = (function(q,sen,log,bid,id) { 
+            btn.onclick = (function(q,sen,log,bid,id) { 
               return function() { 
-                console.log('mouseover!!');
+                console.log('mouseclick!!');
                 generate(q,sen,log,bid,id);
             }; 
         }(tmp2,tmp_ar[0],log,bid,id));
