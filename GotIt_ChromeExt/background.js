@@ -10,15 +10,14 @@ function doStuffWithDom(domContent) {
 	}
 }
 
-var dictionary = {};
+var dictionary = {}; // dictionary to store url and score pair
 var counter = 0;
 
-
+// handle the message passed after correct answer
 function handleMessage(request, sender, sendResponse) {
-  	console.log("Message from the content script: " + request.di + " " + sender.tab.id);
-
-  	// counter ++;
-  	console.log(dictionary);
+  	console.log("Message from myscript.js: " + request.di + " " + sender.tab.id);
+	console.log(dictionary);
+	  
   	if (!sender.tab.id in dictionary){
   		dictionary[sender.tab.id] = 0; 
   		console.log('replacing 0 to nan');
@@ -28,7 +27,8 @@ function handleMessage(request, sender, sendResponse) {
   	chrome.browserAction.setBadgeText({text: String(dictionary[sender.tab.id]),tabId:sender.tab.id});
 	chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]}); 
 	console.log('sending notification');
-
+	
+	// progress bar
 	var progressPercent = dictionary[sender.tab.id] *(100/request.di)
 	var progressPercent_round = Math.round(progressPercent);
 	var progressPercent_int = parseInt(progressPercent_round);
@@ -57,27 +57,20 @@ function handleMessage(request, sender, sendResponse) {
 }
 
 
-
-
 chrome.runtime.onMessage.addListener(handleMessage);
 
-
-
+// if user updates the current tab, handle it
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
-
 		console.log(dictionary);
 		console.log("url:" + changeInfo.url);
 		if(changeInfo.url){dictionary[tabId] = 0;}
-
     	// if (!tabId in dictionary){dictionary[tabId] = 0; }
         chrome.browserAction.setBadgeText({text: String(dictionary[tabId]), tabId: tabId});
         chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]}); 
-
 });
 
-
+// when new tab is opened, re-initialize the app icon for that tab
 chrome.tabs.onCreated.addListener(function(tab) {  
-
    console.log(dictionary);
    dictionary[tab.id] = 0;
    console.log("Created a dictionary element with key " + tab.id + " and value " + dictionary[tab.id] );

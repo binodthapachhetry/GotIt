@@ -19,9 +19,9 @@
 
   "content_scripts": [
     {
-      "matches": ["https://*/*"],
+      "matches": ["https://*/*","http://*/*"],
       "css":["bootstrap.min.css","inject.css","introjs.css"],
-      "js": ["nlp_compromise.js","jquery-3.1.1.js","bootstrap.min.js","intro.js","jquery.confirm.js","jquery.confirm.min.js","myscript.js"],
+      "js": ["compromise.min.js","nlp_compromise.js","jquery-3.1.1.js","bootstrap.min.js","intro.js","jquery.confirm.js","jquery.confirm.min.js","myscript.js"],
       "run_at":"document_end"
     }
   ],

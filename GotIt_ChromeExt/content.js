@@ -11,6 +11,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
         		if(myBodyElements[i].textContent){
         			tmp = myBodyElements[i].textContent;
         			tmp_ar = tmp.split(".")
+
+
         			if(tmp_ar.length>1){
 
                 tmp2 = nlp_compromise.text(tmp_ar[0]).negate().text()
