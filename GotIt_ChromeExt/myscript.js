@@ -11,9 +11,8 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
         sentence_ar = paragraph.split(".")
         //console.log(sentence_ar.length)
 
-       // if(sentence_ar.length>3){ 
-						// skip any paragraph with fewer than 3 lines -- maybe change, by new NLP methods
-									//also skip if sum of sentences is fewer than 50 words (helps avoid other edge cases)
+       if(sentence_ar.length < 2) // skip any paragraph with fewer than 3 lines
+		   continue;
 
 		butNum++;
 
@@ -33,49 +32,66 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		var sentences = [] //deprecated?
 		
 		var regexs = [];
-		regexs.push(/.*[Cc]ause.*\./);
-		regexs.push(/.*[Ss]ymptom.*/);
-		regexs.push(/.*[^\w][Ii]f[^\w].*,.*\./);
-		regexs.push(/.*[Tt]reatment.*\./);
-		regexs.push(/.*doctor.*\./);
-		regexs.push(/.*911.*\./);
-		regexs.push(/.*[Ss]ide effect.*\./);
-		regexs.push(/.*percent.*\./);
+		regexs.push(/(.*)[Cc]ause(.*)\./);
+		regexs.push(/(.*)[Ss]ymptoms(.*)/);
+		regexs.push(/(.*)[^\w][Ii]f[^\w](.*),(.*)\./);
+		regexs.push(/(.*)[Tt]reatment(.*)\./);
+		regexs.push(/([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if(.*)\./);
+		regexs.push(/(.*)call 911 if(.*)\./);
+		regexs.push(/(.*)[Ss]ide effect(.*)\./);
+		regexs.push(/(.*)percent(.*)\./);
 		
 		var q_found = false; //1 question per paragraph
+		var match_counts = [];
 		
 		for (ii = 0; ii < sentence_ar.length; ii++){
 			if (sentence_ar[ii].length > 40 && sentence_ar[ii].length < 200 && !q_found){ //reasonably sized sentences
+			
+				match_counts = [];
 				for (j = 0; j < regexs.length; j++){
 				
 					if (regexs[j].exec(sentence_ar[ii]) != null && !q_found){
-						var s = regexs[j].exec(sentence_ar[ii])[0];
-						sentences.push(s);
-						console.log("Sentence found: " + s);
-						console.log("Using regex" + regexs[j]);
-						
-						q_found = true;
-						question = s;
-						console.log(question)
-						var log = true;
-						// create a button element
-						var btn = document.createElement("button");
-						btn.style.background='#000000'; //document.getElementById("button") ?
-						btn.style.color = '#FFFFFF';
-						var t = document.createTextNode("?");
-						btn.setAttribute('id',bid);
-						btn.setAttribute('class','confirm')
-						btn.appendChild(t);
-						// on click listener for the button
-						btn.onclick = (function(q,sen,log,bid,id) { 
-						  return function() { 
-							console.log('mouseclick!!');
-							generate(q,sen,log,bid,id);
-						};
-						}(question,sentence_ar[0],log,bid,id));
-							myBodyElements[i].appendChild(btn);
-							arr.push(question);
+						match_counts.push(j);
 					}
+				}
+				if (match_counts.length > 0 && match_counts.length < 3) {
+					var randomIndex = Math.floor(Math.random() * match_counts.length);
+					var match = regexs[match_counts[randomIndex]].exec(sentence_ar[ii]);
+					var subject = match[1];
+					console.log("Subject: " + subject);
+					var predicate = match[2];
+					console.log("predicate: " + predicate);
+					if (match.size > 2){
+						var p2 = match[3];
+						console.log("p2: " + p2);
+					}
+					var s = sentence_ar[ii] + ".";
+					sentences.push();
+					console.log("Sentence found: " + s);
+					console.log("Using regex" + j);
+					
+					q_found = true;
+					question = s;
+					console.log(question)
+					var log = true;
+					// create a button element
+					var btn = document.createElement("button");
+					btn.style.background='#000000'; //document.getElementById("button") ?
+					btn.style.color = '#FFFFFF';
+					var t = document.createTextNode("?");
+					btn.setAttribute('id',bid);
+					btn.setAttribute('class','confirm')
+					btn.appendChild(t);
+					// on click listener for the button
+					btn.onclick = (function(q,sen,log,bid,id) { 
+					  return function() { 
+						console.log('mouseclick!!');
+						generate(q,sen,log,bid,id);
+					};
+					}(question,sentence_ar[0],log,bid,id));
+						myBodyElements[i].appendChild(btn);
+						arr.push(question);
+					break;
 				}
 			}
 		}
