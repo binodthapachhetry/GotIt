@@ -9,62 +9,95 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
     if(myBodyElements[i].textContent){
         paragraph = myBodyElements[i].textContent;
         sentence_ar = paragraph.split(".")
-        console.log(sentence_ar.length)
+        //console.log(sentence_ar.length)
 
-        if(sentence_ar.length>3){ // skip any paragraph with fewer than 3 lines
-									//TODO also skip if sum of sentences is fewer than 50 words (helps avoid other edge cases)
+       // if(sentence_ar.length>3){ 
+						// skip any paragraph with fewer than 3 lines -- maybe change, by new NLP methods
+									//also skip if sum of sentences is fewer than 50 words (helps avoid other edge cases)
 
-            butNum++;
+		butNum++;
 
-            var id = "Gotit" + String(i);
-            var bid = "GotitButn" + String(i);
+		var id = "Gotit" + String(i);
+		var bid = "GotitButn" + String(i);
 
-            myBodyElements[i].id = id;
+		myBodyElements[i].id = id;
 
-            myBodyElements[i].setAttribute("data-step",String(count));
+		myBodyElements[i].setAttribute("data-step",String(count));
 
-            count = count + 1;
-            myBodyElements[i].setAttribute("data-intro","Get it, use it.");
+		count = count + 1;
+		myBodyElements[i].setAttribute("data-intro","Get it, use it.");
 
-            // ---- NLP
-			// TODO JOSH - instead, find a sentence in the paragraph that makes a good question
-            if(nlp(sentence_ar[0]).clauses().data().length==1){
-                verbCount = nlp(sentence_ar[0]).verbs().data()
-                // use nlp compromise library to check if the first verb occurence is negative
-                negCount = nlp(sentence_ar[0]).verbs(0).isNegative().length
-                if(negCount==1){
-                    // if negative make it positive
-                    question = nlp(sentence_ar[0]).sentences(0).toPositive().out()
-                }else{
-                    // if positive make it negative
-                    question = nlp(sentence_ar[0]).verbs(0).toNegative().out()
-                }
-			// ---- /NLP
-                
-                console.log(question)
-                var log = true;
-                // create a button element
-                var btn = document.createElement("button");
-				btn.style.background='#000000'; //document.getElementById("button") ?
-				btn.style.color = '#FFFFFF';
-                var t = document.createTextNode("?");
-                btn.setAttribute('id',bid);
-                btn.setAttribute('class','confirm')
-                btn.appendChild(t);
-                // on click listener for the button
-                btn.onclick = (function(q,sen,log,bid,id) { 
-                  return function() { 
-                    console.log('mouseclick!!');
-                    generate(q,sen,log,bid,id);
-                };
-
-        }(question,sentence_ar[0],log,bid,id));
-            myBodyElements[i].appendChild(btn);
-            arr.push(question)
-        }
-    }
-
-    }
+		// ---- NLP
+		// TODO JOSH - instead, find a sentence in the paragraph that makes a good question
+		
+		var sentences = [] //deprecated?
+		
+		var regexs = [];
+		regexs.push(/.*[Cc]ause.*\./);
+		regexs.push(/.*[Ss]ymptom.*/);
+		regexs.push(/.*[^\w][Ii]f[^\w].*,.*\./);
+		regexs.push(/.*[Tt]reatment.*\./);
+		regexs.push(/.*doctor.*\./);
+		regexs.push(/.*911.*\./);
+		regexs.push(/.*[Ss]ide effect.*\./);
+		regexs.push(/.*percent.*\./);
+		
+		var q_found = false; //1 question per paragraph
+		
+		for (ii = 0; ii < sentence_ar.length; ii++){
+			if (sentence_ar[ii].length > 40 && sentence_ar[ii].length < 200 && !q_found){ //reasonably sized sentences
+				for (j = 0; j < regexs.length; j++){
+				
+					if (regexs[j].exec(sentence_ar[ii]) != null && !q_found){
+						var s = regexs[j].exec(sentence_ar[ii])[0];
+						sentences.push(s);
+						console.log("Sentence found: " + s);
+						console.log("Using regex" + regexs[j]);
+						
+						q_found = true;
+						question = s;
+						console.log(question)
+						var log = true;
+						// create a button element
+						var btn = document.createElement("button");
+						btn.style.background='#000000'; //document.getElementById("button") ?
+						btn.style.color = '#FFFFFF';
+						var t = document.createTextNode("?");
+						btn.setAttribute('id',bid);
+						btn.setAttribute('class','confirm')
+						btn.appendChild(t);
+						// on click listener for the button
+						btn.onclick = (function(q,sen,log,bid,id) { 
+						  return function() { 
+							console.log('mouseclick!!');
+							generate(q,sen,log,bid,id);
+						};
+						}(question,sentence_ar[0],log,bid,id));
+							myBodyElements[i].appendChild(btn);
+							arr.push(question);
+					}
+				}
+			}
+		}
+			
+			
+			
+			/* //PREVIOUS NLP
+			if(nlp(sentence_ar[0]).clauses().data().length==1){
+				verbCount = nlp(sentence_ar[0]).verbs().data()
+				// use nlp compromise library to check if the first verb occurence is negative
+				negCount = nlp(sentence_ar[0]).verbs(0).isNegative().length
+				if(negCount==1){
+					// if negative make it positive
+					question = nlp(sentence_ar[0]).sentences(0).toPositive().out()
+				}else{
+					// if positive make it negative
+					question = nlp(sentence_ar[0]).verbs(0).toNegative().out()
+				}
+				*/
+				
+				
+	}
 }
 
 // hide the sentence in the paragraph while question is generated
@@ -74,8 +107,6 @@ function generate(qu,sen,log,bid,id){
   document.getElementById(id).innerHTML = document.getElementById(id).innerHTML.replace(sen,new_sen)
   var j_id = "#"+id+" span"
   $(j_id).css('background-color', 'black');
-  //TODO also change text color to black, so that it can't be seen by highlight
-  //TODO collect the original text color and background color, may not be black on white
 
 var j_bid = "#"+bid
 
@@ -87,7 +118,7 @@ $.confirm({
     title: "True or False",
     confirm: function(button) {
         console.log('pressed confirm');
-        $(j_id).css('background-color', 'white'); // unhide the sentence TODO also return text to original color
+        $(j_id).css('background-color', 'white');
         $(j_bid).remove(); // remove the question mark
     },
     cancel: function(button) {
