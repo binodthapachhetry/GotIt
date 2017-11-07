@@ -123,7 +123,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 					}
 				}
 				*/
-			}
+			// }
 		});
 		
 		if (!q_found){ //couldn't find a question up to this point, just pick a good sentence and make it a true question
@@ -192,6 +192,8 @@ $.confirm({
     confirm: function(button) {
         console.log('pressed confirm');
         $(j_id).css('background-color', 'white');
+        $(j_id).css('text-decoration','underline');
+        $(j_bid).remove(); // remove the question mark on correct        
     },
     cancel: function(button) {
         console.log('pressed cancel');
@@ -218,6 +220,9 @@ $.confirm({
     cancel: function(button) {
         console.log('pressed cancel');
         $(j_id).css('background-color', 'white'); // unhide the sentence
+        $(j_id).css('text-decoration','underline'); // unhide the sentence
+        $(j_bid).remove(); // remove the question mark on correct
+        
 
     },
     confirmButton: "True", // assign "True" string to confirn button

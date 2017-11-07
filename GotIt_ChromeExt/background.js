@@ -1,4 +1,3 @@
-
 // A function to use as callback
 function doStuffWithDom(domContent) {
 	arrayLength = domContent.length;
@@ -16,7 +15,7 @@ var counter = 0;
 // handle the message passed after correct answer
 function handleMessage(request, sender, sendResponse) {
   	console.log("Message from myscript.js: " + request.di + " " + sender.tab.id);
-	console.log(dictionary);
+	// console.log(dictionary);
 	  
   	if (!sender.tab.id in dictionary){
   		dictionary[sender.tab.id] = 0; 
@@ -24,8 +23,8 @@ function handleMessage(request, sender, sendResponse) {
   	}
 
   	dictionary[sender.tab.id] = dictionary[sender.tab.id] + 1;
-  	chrome.browserAction.setBadgeText({text: String(dictionary[sender.tab.id]),tabId:sender.tab.id});
-	chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]}); 
+  	chrome.browserAction.setBadgeText({text: String(dictionary[sender.tab.id]).concat("/",String(request.di)),tabId:sender.tab.id});
+	chrome.browserAction.setBadgeBackgroundColor({"color": "black"}); 
 	console.log('sending notification');
 	
 	// progress bar
@@ -33,7 +32,8 @@ function handleMessage(request, sender, sendResponse) {
 	var progressPercent_round = Math.round(progressPercent);
 	var progressPercent_int = parseInt(progressPercent_round);
 
-	console.log(sender.tab.id);
+	console.log(dictionary[sender.tab.id]);
+	console.log(request.di);
 	console.log(dictionary[sender.tab.id]);
 	console.log(progressPercent_round);
 	console.log(progressPercent_int);
@@ -66,7 +66,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 		if(changeInfo.url){dictionary[tabId] = 0;}
     	// if (!tabId in dictionary){dictionary[tabId] = 0; }
         chrome.browserAction.setBadgeText({text: String(dictionary[tabId]), tabId: tabId});
-        chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]}); 
+        chrome.browserAction.setBadgeBackgroundColor({"color": "black"}); 
 });
 
 // when new tab is opened, re-initialize the app icon for that tab
@@ -75,5 +75,5 @@ chrome.tabs.onCreated.addListener(function(tab) {
    dictionary[tab.id] = 0;
    console.log("Created a dictionary element with key " + tab.id + " and value " + dictionary[tab.id] );
    chrome.browserAction.setBadgeText({text: String(dictionary[tab.id]), tabId: tab.id});
-   chrome.browserAction.setBadgeBackgroundColor({"color": [0, 255, 0, 100]});
+   chrome.browserAction.setBadgeBackgroundColor({"color": "black"});
 });

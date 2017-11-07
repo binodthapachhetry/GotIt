@@ -1,6 +1,4 @@
-function hello() {
-   var  name = document.getElementById('info').value;
-   alert("Hello " +name);
+function count(){
+    document.getElementById('demo').src = chrome.extension.getURL("big_buck_bunny.mp4"); 
 }
-
-document.getElementById('btn').addEventListener('click', hello);
+document.getElementById('do-count').onclick = count;
