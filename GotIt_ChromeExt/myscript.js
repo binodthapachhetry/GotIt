@@ -74,6 +74,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 					question = s;
 					console.log(question)
 					var log = true;
+					var reverse = false; //whether false is true
 					// create a button element
 					var btn = document.createElement("button");
 					btn.style.background='#000000'; //document.getElementById("button") ?
@@ -86,7 +87,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 					btn.onclick = (function(q,sen,log,bid,id) { 
 					  return function() { 
 						console.log('mouseclick!!');
-						generate(q,sen,log,bid,id);
+						generate(q,sen,log,bid,id, reverse);
 					};
 					}(question,sentence_ar[0],log,bid,id));
 						myBodyElements[i].appendChild(btn);
@@ -117,16 +118,18 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 }
 
 // hide the sentence in the paragraph while question is generated
-function generate(qu,sen,log,bid,id){
+function generate(qu,sen,log,bid,id, reverse){
   console.log(sen);
   var new_sen = "<span>"+sen+"</span>"
   document.getElementById(id).innerHTML = document.getElementById(id).innerHTML.replace(sen,new_sen)
   var j_id = "#"+id+" span"
   $(j_id).css('background-color', 'black');
 
-var j_bid = "#"+bid
+var j_bid = "#"+bid;
 
-console.log(j_bid)
+console.log(j_bid);
+
+if (reverse) {
 
 // on click listener for true and false options
 $.confirm({
@@ -135,17 +138,36 @@ $.confirm({
     confirm: function(button) {
         console.log('pressed confirm');
         $(j_id).css('background-color', 'white');
-        $(j_bid).remove(); // remove the question mark
     },
     cancel: function(button) {
         console.log('pressed cancel');
         chrome.runtime.sendMessage({di:butNum})   // since in this case, false is the correct answer, pass it to background.js
         $(j_id).css('background-color', 'white'); // unhide the sentence
-        $(j_bid).remove(); // remove the question mark
+        $(j_bid).remove(); // remove the question mark on correct
 
     },
     confirmButton: "True", // assign "True" string to confirn button
     cancelButton: "False"  // assign "False" string to cancel button
 });
+}
+else {
+	// on click listener for true and false options
+$.confirm({
+    text: qu, // question
+    title: "True or False",
+    confirm: function(button) {
+        console.log('pressed confirm');
+		chrome.runtime.sendMessage({di:butNum})   // since in this case, true is the correct answer, pass it to background.js
+        $(j_id).css('background-color', 'white');
+        $(j_bid).remove(); // remove the question mark on correct
+    },
+    cancel: function(button) {
+        console.log('pressed cancel');
+        $(j_id).css('background-color', 'white'); // unhide the sentence
 
+    },
+    confirmButton: "True", // assign "True" string to confirn button
+    cancelButton: "False"  // assign "False" string to cancel button
+});
+}
 }
