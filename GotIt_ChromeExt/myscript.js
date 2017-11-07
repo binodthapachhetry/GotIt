@@ -31,7 +31,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		
 		var potential_sentences = [];
 		
-		var good_sentence = /(.*)([Cc]ause|[Ss]ymptoms|[Tt]reatment|([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if|[Cc]all 911 if|[Ss]ide effect|percent)(.*)/;
+		var good_sentence = /(.*)([Cc]ause|[Ss]ymptoms|safe|[Tt]reatment|[Uu]se|([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if|[Cc]all 911 if|[Ss]ide effect|percent)(.*)/;
 		
 		var q_found = false; //1 question per paragraph
 		var match_counts = [];
@@ -82,13 +82,38 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
+			if (!q_found && /\sunsafe/.exec(s) != null) {
+				if (reverse) {
+					sentence = s;
+					sentence.replace("unsafe", "safe");
+					q_found = true;
+				}
+				else {
+					sentence = s;
+					q_found = true;
+				}
+			}
+			
+			if (!q_found && /\ssafe/.exec(s) != null) {
+				if (reverse) {
+					sentence = s;
+					sentence.replace("safe", "unsafe");
+					q_found = true;
+				}
+				else {
+					sentence = s;
+					q_found = true;
+				}
+			}
+			
+			/*
 			if (!q_found && /include/.exec(s) != null) { //there might be a list
 				if (/(.*),(.*), (and|or) (.*)/.exec(s) != null) {
 					if (reverse) {
 						sentence = s;
-						matches = /(.*)(includ.*\s)(.*,)(.*,)(and|or)(.*)(/.exec(s);
+						matches = /(.*)(includ.*\s)(.*,)(.*,)(and|or)(.*)/.exec(s);
 						if (matches.length > 5) {
-							s.replace(matches[5], "but not");
+							sentence.replace(matches[5], "but not");
 							q_found = true;
 						}
 					}
@@ -97,6 +122,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 						q_found = true;
 					}
 				}
+				*/
 			}
 		});
 		
