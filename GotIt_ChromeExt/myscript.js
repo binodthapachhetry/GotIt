@@ -31,7 +31,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		
 		var potential_sentences = [];
 		
-		var good_sentence = /(.*)([Cc]ause|[Ss]ymptoms|safe|[Tt]reatment|([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if|[Cc]all 911 if|[Ss]ide effect|percent)(.*)/;
+		var good_sentence = /(.*)([Cc]ause|[Ss]ymptoms|safe|[Tt]reatment|%|([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if|[Cc]all 911 if|[Ss]ide effect|percent)(.*)/;
 		
 		var q_found = false; //1 question per paragraph
 		var match_counts = [];
@@ -102,12 +102,12 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-			if (!skip && /to \d\d?\d? percent/.exec(s) != null){ //percents are always a good question to reverse
+			if (!skip && /to \d\d?\d?(%| percent)/.exec(s) != null){ //percents are always a good question to reverse
 				reverse = true;
 				if (reverse) {
 					//move around the percents so the statement is false -- if no percents found, skip this question
 					if (/(\D\d\d?\d?)\D/.exec(s) != null) {
-						matches = /\D(\d\d?\d?) to (\d\d?\d?) percent/.exec(s);
+						matches = /\D(\d\d?\d?) to (\d\d?\d?)(%| percent)/.exec(s);
 						if (matches[1] > 0 && matches[1] < 100) {
 							sentence = s;
 							new_num1 = ((matches[1] - 30 + Math.floor(Math.random() * 50)) % 100);
@@ -172,8 +172,8 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 					sentence = sentence.replace("40s", "60s");
 					digit_matches = /([1-9])[^0s]/.exec(sentence);
 					if (digit_matches != null) {
-						for (i = 1; i < digit_matches.length; i++){
-							sentence = sentence.replace(digit_matches[i], Math.ceil(Math.random()*10).toString());
+						for (ii = 1; i < digit_matches.length; ii++){
+							sentence = sentence.replace(digit_matches[ii], Math.ceil(Math.random()*10).toString());
 						}
 						
 						if (sentence != s) { //some change was made
