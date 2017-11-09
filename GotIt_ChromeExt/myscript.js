@@ -34,12 +34,13 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		var potential_sentences = [];
 		var potential_sentences_index = [];
 		
-		var good_sentence = /(.*)([Cc]ause|[Ss]ymptoms|safe|[Tt]reatment|%|([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if|[Cc]all 911 if|[Ss]ide effect|percent)(.*)/;
+		var good_sentence = /(.*)(\d|[Cc]ause|viral|bacterial|chronic|acute|[Ss]ymptom|safe|%|([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if|[Cc]all 911 if|[Ss]ide effect|percent)(.*)/;
 		
 		var q_found = false; //1 question per paragraph
 		var match_counts = [];
 		
 		for (ii = 0; ii < sentence_ar.length; ii++){
+			//console.log("outer loop " + ii);
 			if (sentence_ar[ii].length > 45 && sentence_ar[ii].length < 250){ //reasonably sized sentences
 			
 				if (good_sentence.exec(sentence_ar[ii]) != null){
@@ -58,9 +59,10 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		}
 		
 		var sentence, question;
-		var reverse = (Math.floor(Math.random() * 2) == 0); //whether false is true, chosen randomly; if reverese=true, then false is correct answer
+		var reverse = (Math.floor(Math.random() * 2) == 0); //whether false is true, chosen randomly; if reverse=true, then false is correct answer
 		// potential_sentences.forEach(function(s){
 		potential_sentences_index.forEach(function(i){
+			//console.log("Looping through " + i);
 			s = potential_sentences[i];		
 			var skip = false;
 			if (q_found || /:/.exec(s) != null){
@@ -76,7 +78,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				skip = true;
 			}
 			
-			if (!skip && /viral/.exec(s) != null){ //good question to reverse
+			if (!skip && /(.*)viral(.*)/.exec(s) != null){ //good question to reverse
 				reverse = true;
 				if (reverse) {
 					sentence = s;
@@ -92,7 +94,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-			if (!skip && /bacterial/.exec(s) != null){ //good question to reverse
+			if (!skip && /(.*)bacterial(.*)/.exec(s) != null){ //good question to reverse
 				reverse = true;
 				if (reverse) {
 					sentence = s;
@@ -108,23 +110,63 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-			if (!skip && /to \d\d?\d?(%| percent)/.exec(s) != null){ //percents are always a good question to reverse
+			if (!skip && /(.*)acute(.*)/.exec(s) != null){ //good question to reverse
+				reverse = true;
+				if (reverse) {
+					sentence = s;
+					sentence = sentence.replace("acute", "chronic");
+					q_found = true;
+					skip = true;
+					console.log("REVERSED acute: " + sentence);
+				}
+				else {
+					sentence = s;
+					q_found = true;
+					skip = true;
+				}
+			}
+			
+			if (!skip && /(.*)chronic(.*)/.exec(s) != null){ //good question to reverse
+				reverse = true;
+				if (reverse) {
+					sentence = s;
+					sentence = sentence.replace("chronic", "acute");
+					q_found = true;
+					skip = true;
+					console.log("REVERSED chronic: " + sentence);
+				}
+				else {
+					sentence = s;
+					q_found = true;
+					skip = true;
+				}
+			}
+			
+			if (!skip && /(.*)to \d\d?\d?(%| percent)(.*)/.exec(s) != null){ //percents are always a good question to reverse
 				reverse = true;
 				if (reverse) {
 					//move around the percents so the statement is false -- if no percents found, skip this question
-					if (/(\D\d\d?\d?)\D/.exec(s) != null) {
-						matches = /\D(\d\d?\d?) to (\d\d?\d?)(%| percent)/.exec(s);
+					if (/.*(\D\d\d?\d?)\D.*/.exec(s) != null) {
+						matches = /.*\D(\d\d?\d?) to (\d\d?\d?)(%| percent).*/.exec(s);
 						if (matches[1] > 0 && matches[1] < 100) {
 							sentence = s;
 							new_num1 = ((matches[1] - 30 + Math.floor(Math.random() * 50)) % 100);
 							while (new_num1 % 5 != 0){
 								new_num1++;
+								console.log(".");
+								if (new_num1 > 90) {
+									(matches[1] - 60 + Math.floor(Math.random() * 50)) % 100;
+								}
 							}
 							sentence = sentence.replace(new RegExp(matches[1]), new_num1.toString()); //tweak percent to make wrong
 							
 							new_num2 = ((matches[2] - 50 + Math.floor(Math.random() * 70)) % 100);
-							while (new_num2 % 5 != 0 || new_num2 < new_num2+5 ){
-								new_num++;
+							while (new_num2 % 5 != 0 || new_num1 + 5 > new_num2 ){
+								new_num2 = new_num2 + 1;
+								console.log(".");
+								if (new_num2 > 100) {
+									new_num2 = new_num2 - 10;
+								}
 							}
 							sentence = sentence.replace(new RegExp(matches[2]), new_num2.toString()); //tweak percent to make wrong
 							
@@ -141,12 +183,12 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-			if (!skip && /percent/.exec(s) != null){ //percents are always a good question to reverse
+			if (!skip && /(.*)percent(.*)/.exec(s) != null){ //percents are always a good question to reverse
 				reverse = true;
 				if (reverse) {
 					//move around the percents so the statement is false -- if no percents found, skip this question
-					if (/(\D\d\d?\d?)\D/.exec(s) != null) {
-						matches = /\D(\d\d?\d?)\D/.exec(s);
+					if (/.*(\D\d\d?\d?)\D.*/.exec(s) != null) {
+						matches = /.*\D(\d\d?\d?)\D.*/.exec(s);
 						if (matches[1] > 0 && matches[1] < 100) {
 							sentence = s;
 							new_num = ((matches[1] + 20 + Math.floor(Math.random() * 40)) % 100);
@@ -168,7 +210,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 			}
 			
 				//TODO if there are digits, change to other digits
-			if (!skip && /\d/.exec(s) != null){
+			if (!skip && /(.*)\d(.*)/.exec(s) != null){
 				//move around some digits, good question to reverse
 				reverse = true;
 				if (reverse) {
@@ -178,7 +220,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 					sentence = sentence.replace("40s", "60s");
 					digit_matches = /([1-9])[^0s]/.exec(sentence);
 					if (digit_matches != null) {
-						for (ii = 1; i < digit_matches.length; ii++){
+						for (ii = 1; ii < digit_matches.length; ii++){
 							sentence = sentence.replace(digit_matches[ii], Math.ceil(Math.random()*10).toString());
 						}
 						
@@ -196,7 +238,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-			if (!skip && /\sunsafe/.exec(s) != null) {
+			if (!skip && /(.*)\sunsafe(.*)/.exec(s) != null) {
 				if (reverse) {
 					sentence = s;
 					sentence = sentence.replace("unsafe", "safe");
@@ -211,7 +253,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-			if (!skip && /\ssafe/.exec(s) != null) {
+			if (!skip && /(.*)\ssafe(.*)/.exec(s) != null) {
 				if (reverse) {
 					sentence = s;
 					sentence = sentence.replace("safe", "unsafe");
@@ -226,8 +268,8 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-			//if everything has failed up to this point, with a 10% chance make this a simple negated sentence
-			if (!skip && Math.random() < .1){
+			//if everything has failed up to this point, with a 20% chance make this a simple negated sentence
+			if (!skip && Math.random() < .2){
 				if (reverse){
 					sentence = s;
 					if(nlp(sentence).clauses().data().length==1){
