@@ -3,6 +3,7 @@ var docBody = document.getElementsByTagName("body")[0]; // read document
 var myBodyElements = docBody.getElementsByTagName("p"); // read paragraphs
 var arr=[]
 
+
 var count = 1;
 butNum = 0;
 for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
@@ -18,6 +19,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 
 		var id = "Gotit" + String(i);
 		var bid = "GotitButn" + String(i);
+		var index = 0; // default line of interest
 
 		myBodyElements[i].id = id;
 
@@ -30,6 +32,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		// TODO JOSH - instead, find a sentence in the paragraph that makes a good question
 		
 		var potential_sentences = [];
+		var potential_sentences_index = [];
 		
 		var good_sentence = /(.*)([Cc]ause|[Ss]ymptoms|safe|[Tt]reatment|%|([Ss]ee|[Cc]all|[Cc]onsult|[Aa]sk) (a|your) doctor if|[Cc]all 911 if|[Ss]ide effect|percent)(.*)/;
 		
@@ -41,6 +44,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 			
 				if (good_sentence.exec(sentence_ar[ii]) != null){
 						potential_sentences.push(sentence_ar[ii]);
+						potential_sentences_index.push(ii);
 				}
 			}
 		}
@@ -55,7 +59,9 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		
 		var sentence, question;
 		var reverse = (Math.floor(Math.random() * 2) == 0); //whether false is true, chosen randomly; if reverese=true, then false is correct answer
-		potential_sentences.forEach(function(s){
+		// potential_sentences.forEach(function(s){
+		potential_sentences_index.forEach(function(i){
+			s = potential_sentences[i];		
 			var skip = false;
 			if (q_found || /:/.exec(s) != null){
 				//skip if we already found a question or this sentence has a colon
@@ -249,6 +255,10 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 					skip = true;
 				}
 			}
+
+			if(q_found){
+				index = i;
+			}
 			
 			/*
 			if (!q_found && /include/.exec(s) != null) { //there might be a list
@@ -271,7 +281,10 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		});
 		
 		if (!q_found){ //couldn't find a question up to this point, just pick a good sentence and make it a true question
-			sentence = potential_sentences[Math.floor(Math.random() * potential_sentences.length)];
+			var randomNum = Math.floor(Math.random() * potential_sentences.length)
+			sentence = potential_sentences[randomNum];
+			index = potential_sentences_index[randomNum]			
+			// sentence = potential_sentences[Math.floor(Math.random() * potential_sentences.length)];
 			reverse = false;
 		}
 		
@@ -287,12 +300,12 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		btn.setAttribute('class','confirm')
 		btn.appendChild(t);
 		// on click listener for the button
-		btn.onclick = (function(q,sen,log,bid,id) { 
+		btn.onclick = (function(q,sen,log,bid,id,reverse) { 
 		  return function() { 
 			console.log('mouseclick!!');
 			generate(q,sen,log,bid,id, reverse);
 		};
-		}(question,sentence_ar[0],log,bid,id));
+		}(question,sentence_ar[index],log,bid,id,reverse));
 			myBodyElements[i].appendChild(btn);
 			arr.push(question);
 		
@@ -316,7 +329,7 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				*/
 
 // hide the sentence in the paragraph while question is generated
-function generate(qu,sen,log,bid,id, reverse){
+function generate(qu,sen,log,bid,id,isReverse){
   console.log(sen);
   var new_sen = "<span>"+sen+"</span>"
   document.getElementById(id).innerHTML = document.getElementById(id).innerHTML.replace(sen,new_sen)
@@ -327,7 +340,7 @@ var j_bid = "#"+bid;
 
 console.log(j_bid);
 
-if (reverse) {
+if (isReverse) {
 
 // on click listener for true and false options
 $.confirm({
