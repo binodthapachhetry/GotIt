@@ -15,8 +15,6 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
        if(sentence_ar.length < 2) // skip any paragraph with fewer than 3 lines
 		   continue;
 
-		butNum++;
-
 		var id = "Gotit" + String(i);
 		var bid = "GotitButn" + String(i);
 		var index = 0; // default line of interest
@@ -385,6 +383,8 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		else {
 			pos_count--;
 		}
+		
+		butNum++;
 		
 		question = sentence + ".";
 		var log = true;
