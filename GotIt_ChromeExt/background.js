@@ -43,7 +43,7 @@ function handleMessage(request, sender, sendResponse) {
 		  title: "Good job for the correct answer!",
 		  message: "Your current progress:",
 		  iconUrl: chrome.extension.getURL("studying.png"),
-		  priority:2,
+		  priority:0,
 		  isClickable:false,
 		  progress: progressPercent_int
 		}
@@ -64,6 +64,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 		console.log(dictionary);
 		console.log("url:" + changeInfo.url);
 		if(changeInfo.url){dictionary[tabId] = 0;}
+		dictionary[tab.id] = 0;
     	// if (!tabId in dictionary){dictionary[tabId] = 0; }
         chrome.browserAction.setBadgeText({text: String(dictionary[tabId]), tabId: tabId});
         chrome.browserAction.setBadgeBackgroundColor({"color": "black"}); 

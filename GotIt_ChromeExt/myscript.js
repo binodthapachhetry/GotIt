@@ -61,9 +61,9 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 			reverse = true;
 		}
 		// potential_sentences.forEach(function(s){
-		potential_sentences_index.forEach(function(i){
+		potential_sentences_index.forEach(function(iii){
 			console.log("pos count " + pos_count);
-			s = potential_sentences[i];		
+			s = potential_sentences[iii];		
 			var skip = false;
 			if (q_found || /(.*):(.*)/.exec(s) != null){
 				//skip if we already found a question or this sentence has a colon
@@ -332,9 +332,8 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 				}
 			}
 			
-
 			if(q_found){
-				index = i;
+				index = iii;
 			}
 			
 		}); //end of foreach sentence
@@ -343,11 +342,16 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 			//just skip this paragraph, nothing interesting
 			continue;
 		}
+
+		// if(q_found){
+		// 	index = iii;
+		// }
 		
 		if (!q_found || sentence == null){ //couldn't find a question up to this point, just pick a good sentence and maybe negate it
 			var randomNum = Math.floor(Math.random() * potential_sentences.length);
-			sentence = potential_sentences[randomNum];
-			index = potential_sentences_index[randomNum];		
+			index = potential_sentences_index[randomNum];
+			sentence = potential_sentences[index];
+					
 			// sentence = potential_sentences[Math.floor(Math.random() * potential_sentences.length)];
 			//if everything has failed up to this point make a random sentence a simple negated sentence
 			if (reverse && Math.random() < .2){
