@@ -349,8 +349,8 @@ for (i = 0; i < myBodyElements.length; i++) { // loop over each paragraph
 		
 		if (!q_found || sentence == null){ //couldn't find a question up to this point, just pick a good sentence and maybe negate it
 			var randomNum = Math.floor(Math.random() * potential_sentences.length);
+			sentence = potential_sentences[randomNum];			
 			index = potential_sentences_index[randomNum];
-			sentence = potential_sentences[index];
 					
 			// sentence = potential_sentences[Math.floor(Math.random() * potential_sentences.length)];
 			//if everything has failed up to this point make a random sentence a simple negated sentence
@@ -478,9 +478,7 @@ $.confirm({
         console.log('pressed cancel');
         $(j_id).css('background-color', 'white'); // unhide the sentence
         $(j_id).css('text-decoration','underline'); // unhide the sentence
-		$(j_bid).remove(); // remove the question mark on incorrect
-
-        
+		$(j_bid).remove(); // remove the question mark on incorrect       
 
     },
     confirmButton: "True", // assign "True" string to confirn button
