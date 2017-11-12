@@ -1,6 +1,13 @@
 
 var docBody = document.getElementsByTagName("body")[0]; // read document 
 var myBodyElements = docBody.getElementsByTagName("p"); // read paragraphs
+
+// Add bubble to the top of the page.
+// var bubbleDOM = document.createElement('div');
+// bubbleDOM.setAttribute('class', 'selection_bubble');
+// document.body.appendChild(bubbleDOM);
+
+
 var arr=[]
 
 var pos_count = 0;
@@ -486,3 +493,36 @@ $.confirm({
 });
 }
 }
+
+ document.body.addEventListener('dblclick',function(e){
+	var selection = window.getSelection();
+	
+	var wordOri = selection.toString();
+	var word = wordOri.replace(/ /g,'');
+	if(word.length>2){
+		var xhr = new XMLHttpRequest();
+		xhr.overrideMimeType('text/xml');
+		xhr.open('GET', "https://www.dictionaryapi.com/api/references/medical/v2/xml/".concat(word,"?key=09d04632-ebd6-4c1f-9cab-0c8d0407e5b9"), true);
+		xhr.send();
+		
+		xhr.onreadystatechange = processRequest;
+		
+		function processRequest(e) {
+			if (xhr.readyState == 4 && xhr.status == 200) {
+				var word_def = xhr.responseXML.childNodes[0].getElementsByTagName("dt")[0].textContent;
+				alert(word_def);
+
+			}
+		
+		}
+	}
+ });
+
+ // Move that bubble to the appropriate location.
+// function renderBubble(mouseX, mouseY, selection) {
+// 	// bubbleDOM.style.visibility = 'hidden';	
+// 	bubbleDOM.innerHTML = selection;
+// 	bubbleDOM.style.top = mouseY + 'px';
+// 	bubbleDOM.style.left = mouseX + 'px';
+// 	bubbleDOM.style.visibility = 'visible';
+//   }
